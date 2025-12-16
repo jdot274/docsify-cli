@@ -1,8 +1,12 @@
 *.log
 .DS_Store
 .vscode/
+.claude/
+.specstory/
+.gpt-runner/
 node_modules/
 yarn.lock
 bin/
 test_docs/
 .idea
+swiftly.pkg
