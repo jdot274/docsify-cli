@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docsify Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --bg: #020617;
+      --panel: rgba(15, 23, 42, 0.9);
+      --panel2: rgba(15, 23, 42, 0.65);
+      --border: rgba(148, 163, 184, 0.25);
+      --muted: #94a3b8;
+      --text: #e2e8f0;
+      --accent: #38bdf8;
+      --accent2: #a78bfa;
+      --danger: #fb7185;
+      --ok: #34d399;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(1400px 900px at 10% 0%, rgba(56, 189, 248, 0.18), transparent 60%),
+        radial-gradient(1200px 800px at 90% 20%, rgba(167, 139, 250, 0.16), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(2, 6, 23, 0.75);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 260px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .brand .sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      font-size: 0.78rem;
+      color: #cbd5f5;
+      white-space: nowrap;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.85rem;
+      color: #cbd5f5;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      background: rgba(15, 23, 42, 0.5);
+      user-select: none;
+    }
+
+    .toggle input { accent-color: var(--accent); }
+
+    button {
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 0.6rem 1rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+    .primary {
+      background: linear-gradient(120deg, var(--accent), var(--accent2));
+      color: #0b1020;
+      box-shadow: 0 12px 28px rgba(56, 189, 248, 0.25);
+    }
+
+    .ghost {
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: var(--text);
+    }
+
+    .danger {
+      background: rgba(251, 113, 133, 0.14);
+      border: 1px solid rgba(251, 113, 133, 0.35);
+      color: #fecdd3;
+    }
+
+    .app {
+      padding: 1.25rem;
+      display: grid;
+      grid-template-columns: 320px minmax(420px, 1fr) minmax(420px, 1fr);
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 1rem 1rem 0.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .panel-body { padding: 1rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    input[type="text"], input[type="number"], textarea, select {
+      width: 100%;
+      font-family: inherit;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: rgba(2, 6, 23, 0.6);
+      color: var(--text);
+      padding: 0.65rem 0.8rem;
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      min-height: 56vh;
+      resize: vertical;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid rgba(56, 189, 248, 0.7);
+      border-color: transparent;
+    }
+
+    .pages {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .page-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-height: 62vh;
+      overflow: auto;
+      padding-right: 0.25rem;
+    }
+
+    .page-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.65rem 0.7rem;
+      border-radius: 14px;
+      background: rgba(2, 6, 23, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .page-item:hover { border-color: rgba(56, 189, 248, 0.35); }
+    .page-item.active {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .page-item .name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .page-item .meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(15, 23, 42, 0.6);
+    }
+
+    .toolbtn {
+      background: rgba(148, 163, 184, 0.14);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #e2e8f0;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .toolbtn:hover { border-color: rgba(56, 189, 248, 0.35); }
+
+    .editor-status {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 0 1rem 0.85rem;
+    }
+
+    .editor-status strong { color: #cbd5f5; }
+
+    .preview-controls {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: calc(62vh + 110px);
+      border: none;
+      background: #0b1020;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      box-shadow: var(--shadow);
+      min-width: min(520px, calc(100vw - 2rem));
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .toast.show { display: flex; }
+    .toast .msg { font-size: 0.9rem; color: #e2e8f0; }
+    .toast .msg.muted { color: var(--muted); }
+    .toast .msg.ok { color: #bbf7d0; }
+    .toast .msg.err { color: #fecdd3; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 40;
+    }
+
+    .modal.show { display: flex; }
+
+    .modal-card {
+      width: min(820px, 100%);
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.98);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .modal-card header {
+      position: static;
+      background: transparent;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .modal-card .topbar { padding: 0.9rem 1rem; }
+    .modal-card .topbar h3 { margin: 0; font-size: 1rem; }
+    .modal-card .content { padding: 1rem; display: grid; gap: 0.9rem; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 0 1rem 1rem; }
+
+    @media (max-width: 1200px) {
+      .app { grid-template-columns: 320px 1fr; grid-template-rows: auto auto; }
+      .preview { grid-column: 1 / -1; }
+      textarea { min-height: 45vh; }
+      .preview-frame { height: 52vh; }
+    }
+
+    @media (max-width: 820px) {
+      .app { grid-template-columns: 1fr; }
+      .brand { min-width: unset; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <h1>Docsify Designer</h1>
+        <div class="sub">
+          <span class="pill">Docs: <span id="docs-path">…</span></span>
+          <span class="pill" id="preview-pill">Preview: <span id="preview-status">checking…</span></span>
+        </div>
+      </div>
+      <div class="controls">
+        <label class="toggle"><input type="checkbox" id="autosave"> Autosave</label>
+        <label class="toggle"><input type="checkbox" id="autorefresh"> Refresh preview on save</label>
+        <button class="ghost" id="settings-btn">Settings</button>
+        <button class="ghost" id="sidebar-btn">Sidebar</button>
+        <button class="primary" id="save-btn">Save</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app">
+    <aside class="panel pages">
+      <div class="panel-header">
+        <h2>Pages</h2>
+        <button class="toolbtn" id="new-page-btn">New</button>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label for="page-filter">Search</label>
+          <input id="page-filter" type="text" placeholder="README, guide, api…">
+        </div>
+        <div class="page-list" id="page-list" style="margin-top: 0.75rem;"></div>
+        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.85rem;">
+          <button class="ghost" id="upload-btn">Upload image</button>
+          <button class="danger" id="delete-page-btn" disabled>Delete page</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel editor">
+      <div class="panel-header">
+        <h2 id="editor-title">Content</h2>
+        <span class="pill" id="route-pill">Route: <span id="route-text">#/</span></span>
+      </div>
+      <div class="toolbar">
+        <button class="toolbtn" data-md="h2">H2</button>
+        <button class="toolbtn" data-md="bold">Bold</button>
+        <button class="toolbtn" data-md="italic">Italic</button>
+        <button class="toolbtn" data-md="code">Code</button>
+        <button class="toolbtn" data-md="link">Link</button>
+        <button class="toolbtn" data-md="ul">List</button>
+        <button class="toolbtn" data-md="quote">Quote</button>
+        <span class="pill" id="dirty-pill" style="display:none;">Unsaved changes</span>
+      </div>
+      <div class="panel-body" style="padding-top: 0.75rem;">
+        <textarea id="editor" spellcheck="false"></textarea>
+      </div>
+      <div class="editor-status">
+        <span>Editing: <strong id="current-file">…</strong></span>
+        <span class="pill">Cmd/Ctrl+S to save</span>
+      </div>
+    </section>
+
+    <section class="panel preview">
+      <div class="panel-header">
+        <h2>Preview</h2>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="toolbtn" id="refresh-preview-btn">Refresh</button>
+          <button class="toolbtn" id="open-preview-btn">Open</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="preview-controls">
+          <div class="field">
+            <label for="preview-url">Preview URL</label>
+            <input id="preview-url" type="text" placeholder="http://localhost:3002">
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <button class="ghost" id="apply-preview-url">Apply</button>
+          </div>
+        </div>
+      </div>
+      <iframe class="preview-frame" id="preview-frame" title="Docs preview"></iframe>
+    </section>
+  </div>
+
+  <div class="modal" id="settings-modal" aria-hidden="true">
+    <div class="modal-card">
+      <header>
+        <div class="topbar">
+          <div style="display:flex; flex-direction:column; gap:0.2rem;">
+            <h3>Site Settings</h3>
+            <div class="sub" style="padding:0; margin:0;">
+              <span class="pill">Updates <code>index.html</code></span>
+            </div>
+          </div>
+          <button class="ghost" data-close="settings-modal">Close</button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="field">
+          <label for="site-title">Page title</label>
+          <input id="site-title" type="text" placeholder="My Docs">
+        </div>
+        <div class="field">
+          <label for="site-description">Meta description</label>
+          <input id="site-description" type="text" placeholder="Short description…">
+        </div>
+        <div class="field">
+          <label for="site-name">Docsify name (navbar)</label>
+          <input id="site-name" type="text" placeholder="Docs">
+        </div>
+        <div class="field">
+          <label for="site-theme">Theme</label>
+          <select id="site-theme"></select>
+        </div>
+        <div class="field">
+          <label class="toggle" style="justify-content:space-between;">
+            <span>Load sidebar</span>
+            <input type="checkbox" id="site-loadSidebar">
+          </label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" data-close="settings-modal">Cancel</button>
+        <button class="primary" id="save-settings-btn">Save settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="sidebar-modal" aria-hidden="true">
+    <div class="modal-card">
+      <header>
+        <div class="topbar">
+          <div style="display:flex; flex-direction:column; gap:0.2rem;">
+            <h3>Sidebar</h3>
+            <div class="sub" style="padding:0; margin:0;">
+              <span class="pill">Edits <code>_sidebar.md</code></span>
+              <span class="pill">Empty = remove sidebar file</span>
+            </div>
+          </div>
+          <button class="ghost" data-close="sidebar-modal">Close</button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="field">
+          <label for="sidebar-editor">Sidebar Markdown</label>
+          <textarea id="sidebar-editor" spellcheck="false" style="min-height: 360px;"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" data-close="sidebar-modal">Cancel</button>
+        <button class="primary" id="save-sidebar-btn">Save sidebar</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="upload-input" accept="image/*" style="display:none;">
+
+  <div class="toast" id="toast">
+    <div class="msg muted" id="toast-msg">…</div>
+    <button class="ghost" id="toast-close">Dismiss</button>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const pageList = $('page-list');
+    const editor = $('editor');
+    const currentFile = $('current-file');
+    const editorTitle = $('editor-title');
+    const dirtyPill = $('dirty-pill');
+    const routeText = $('route-text');
+    const previewFrame = $('preview-frame');
+
+    const toast = $('toast');
+    const toastMsg = $('toast-msg');
+
+    const state = {
+      docsDir: '',
+      pages: [],
+      selectedPage: 'README.md',
+      pageContent: '',
+      dirty: false,
+      autosave: false,
+      autorefresh: true,
+      previewUrl: 'http://localhost:3002',
+      settings: null,
+      sidebar: '',
+      themes: [],
+      saveTimer: null,
+    };
+
+    function showToast(message, kind = 'muted') {
+      toastMsg.textContent = message;
+      toastMsg.className = `msg ${kind}`;
+      toast.classList.add('show');
+      window.clearTimeout(showToast._timer);
+      showToast._timer = window.setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    $('toast-close').addEventListener('click', () => toast.classList.remove('show'));
+
+    function setDirty(isDirty) {
+      state.dirty = isDirty;
+      dirtyPill.style.display = isDirty ? 'inline-flex' : 'none';
+      $('save-btn').disabled = !isDirty;
+    }
+
+    function baseRouteForPage(path) {
+      if (!path || path === 'README.md') return '#/';
+      const trimmed = path.replace(/\\.md$/i, '');
+      const normalized = trimmed.replaceAll(' ', '%20');
+      return '#/' + normalized;
+    }
+
+    function updateRouteUI() {
+      const route = baseRouteForPage(state.selectedPage);
+      routeText.textContent = route;
+      $('route-pill').title = `${state.previewUrl}/${route}`;
+    }
+
+    function setPreviewSrc(forceReload = false) {
+      const route = baseRouteForPage(state.selectedPage);
+      const url = new URL(state.previewUrl);
+      url.hash = route.replace('#', '');
+      if (forceReload) {
+        url.searchParams.set('_ts', String(Date.now()));
+      }
+      previewFrame.src = url.toString();
+    }
+
+    async function checkPreview() {
+      try {
+        const url = new URL('/api/check-preview', window.location.origin);
+        url.searchParams.set('url', state.previewUrl);
+        const res = await fetch(url);
+        const data = await res.json();
+        const statusEl = $('preview-status');
+        if (data.ok) {
+          statusEl.textContent = 'online';
+          statusEl.style.color = '#bbf7d0';
+        } else {
+          statusEl.textContent = 'offline';
+          statusEl.style.color = '#fecdd3';
+        }
+      } catch (error) {
+        const statusEl = $('preview-status');
+        statusEl.textContent = 'unknown';
+        statusEl.style.color = '#cbd5f5';
+      }
+    }
+
+    function renderPages() {
+      const filter = $('page-filter').value.trim().toLowerCase();
+      const filtered = state.pages.filter(p => p.toLowerCase().includes(filter));
+      pageList.innerHTML = '';
+      for (const page of filtered) {
+        const row = document.createElement('div');
+        row.className = 'page-item' + (page === state.selectedPage ? ' active' : '');
+        const left = document.createElement('div');
+        left.style.minWidth = '0';
+        const name = document.createElement('div');
+        name.className = 'name';
+        name.textContent = page;
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = page === 'README.md' ? 'home' : 'page';
+        left.appendChild(name);
+        left.appendChild(meta);
+        const right = document.createElement('span');
+        right.className = 'pill';
+        right.textContent = baseRouteForPage(page);
+        row.appendChild(left);
+        row.appendChild(right);
+        row.addEventListener('click', () => selectPage(page));
+        pageList.appendChild(row);
+      }
+      $('delete-page-btn').disabled = state.selectedPage === 'README.md';
+    }
+
+    async function selectPage(page) {
+      if (state.dirty) {
+        showToast('Save or discard changes before switching pages.', 'err');
+        return;
+      }
+      state.selectedPage = page;
+      currentFile.textContent = page;
+      editorTitle.textContent = page === 'README.md' ? 'Homepage' : 'Page';
+      updateRouteUI();
+      setPreviewSrc();
+      renderPages();
+      await loadPageContent(page);
+    }
+
+    async function loadPageContent(page) {
+      try {
+        const url = new URL('/api/page', window.location.origin);
+        url.searchParams.set('path', page);
+        const res = await fetch(url);
+        const data = await res.json();
+        editor.value = data.content || '';
+        state.pageContent = editor.value;
+        setDirty(false);
+      } catch (error) {
+        showToast('Failed to load page content.', 'err');
+      }
+    }
+
+    async function loadInitial() {
+      try {
+        const filesRes = await fetch('/api/files');
+        const files = await filesRes.json();
+        state.docsDir = files.docsDir || '';
+        $('docs-path').textContent = state.docsDir;
+        state.sidebar = files.sidebar || '';
+        state.settings = files.settings || null;
+        state.themes = files.themes || [];
+
+        const pagesRes = await fetch('/api/pages');
+        const pagesData = await pagesRes.json();
+        state.pages = pagesData.pages || ['README.md'];
+        if (!state.pages.includes('README.md')) state.pages.unshift('README.md');
+
+        const savedPreview = window.localStorage.getItem('docsifyDesigner.previewUrl');
+        const savedAutosave = window.localStorage.getItem('docsifyDesigner.autosave');
+        const savedAutorefresh = window.localStorage.getItem('docsifyDesigner.autorefresh');
+        state.previewUrl = savedPreview || state.previewUrl;
+        state.autosave = savedAutosave === 'true';
+        state.autorefresh = savedAutorefresh !== 'false';
+        $('preview-url').value = state.previewUrl;
+        $('autosave').checked = state.autosave;
+        $('autorefresh').checked = state.autorefresh;
+
+        populateSettingsForm();
+        renderPages();
+        await selectPage('README.md');
+        await checkPreview();
+      } catch (error) {
+        showToast('Failed to load designer data.', 'err');
+      }
+    }
+
+    function populateSettingsForm() {
+      const settings = state.settings || {};
+      $('site-title').value = settings.title || 'Document';
+      $('site-description').value = settings.description || '';
+      $('site-name').value = settings.docsifyName || '';
+      $('site-loadSidebar').checked = Boolean(settings.loadSidebar);
+      const themeSelect = $('site-theme');
+      themeSelect.innerHTML = '';
+      for (const theme of state.themes) {
+        const opt = document.createElement('option');
+        opt.value = theme;
+        opt.textContent = theme;
+        themeSelect.appendChild(opt);
+      }
+      themeSelect.value = settings.theme || 'vue';
+      $('sidebar-editor').value = state.sidebar || '';
+    }
+
+    async function savePage() {
+      const content = editor.value;
+      try {
+        const res = await fetch('/api/page', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({path: state.selectedPage, content}),
+        });
+        if (!res.ok) throw new Error('bad response');
+        state.pageContent = content;
+        setDirty(false);
+        showToast('Saved page.', 'ok');
+        if (state.autorefresh) setPreviewSrc(true);
+      } catch (error) {
+        showToast('Failed to save page.', 'err');
+      }
+    }
+
+    async function saveSettings() {
+      try {
+        const payload = {
+          title: $('site-title').value.trim(),
+          description: $('site-description').value.trim(),
+          docsifyName: $('site-name').value.trim(),
+          theme: $('site-theme').value,
+          loadSidebar: $('site-loadSidebar').checked,
+        };
+        const res = await fetch('/api/settings', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('bad response');
+        showToast('Saved settings.', 'ok');
+        closeModal('settings-modal');
+        if (state.autorefresh) setPreviewSrc(true);
+      } catch (error) {
+        showToast('Failed to save settings.', 'err');
+      }
+    }
+
+    async function saveSidebar() {
+      try {
+        const content = $('sidebar-editor').value;
+        const res = await fetch('/api/sidebar', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({content}),
+        });
+        if (!res.ok) throw new Error('bad response');
+        showToast('Saved sidebar.', 'ok');
+        closeModal('sidebar-modal');
+        if (state.autorefresh) setPreviewSrc(true);
+      } catch (error) {
+        showToast('Failed to save sidebar.', 'err');
+      }
+    }
+
+    function debounceAutosave() {
+      if (!state.autosave) return;
+      window.clearTimeout(state.saveTimer);
+      state.saveTimer = window.setTimeout(() => {
+        if (state.dirty) savePage();
+      }, 900);
+    }
+
+    editor.addEventListener('input', () => {
+      setDirty(true);
+      debounceAutosave();
+    });
+
+    $('save-btn').addEventListener('click', savePage);
+
+    window.addEventListener('keydown', (event) => {
+      const isSave = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's';
+      if (!isSave) return;
+      event.preventDefault();
+      if (state.dirty) savePage();
+      else showToast('No changes to save.', 'muted');
+    });
+
+    $('page-filter').addEventListener('input', renderPages);
+
+    $('autosave').addEventListener('change', (event) => {
+      state.autosave = event.target.checked;
+      window.localStorage.setItem('docsifyDesigner.autosave', String(state.autosave));
+      showToast(state.autosave ? 'Autosave enabled.' : 'Autosave disabled.', 'muted');
+    });
+
+    $('autorefresh').addEventListener('change', (event) => {
+      state.autorefresh = event.target.checked;
+      window.localStorage.setItem('docsifyDesigner.autorefresh', String(state.autorefresh));
+      showToast(state.autorefresh ? 'Preview will refresh after save.' : 'Preview will not refresh after save.', 'muted');
+    });
+
+    $('apply-preview-url').addEventListener('click', async () => {
+      const url = $('preview-url').value.trim();
+      if (!url) return;
+      state.previewUrl = url;
+      window.localStorage.setItem('docsifyDesigner.previewUrl', url);
+      setPreviewSrc(true);
+      await checkPreview();
+      showToast('Updated preview URL.', 'muted');
+    });
+
+    $('refresh-preview-btn').addEventListener('click', () => setPreviewSrc(true));
+    $('open-preview-btn').addEventListener('click', () => window.open(previewFrame.src || state.previewUrl, '_blank', 'noreferrer'));
+
+    function openModal(id) {
+      const modal = $(id);
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal(id) {
+      const modal = $(id);
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    $('settings-btn').addEventListener('click', () => {
+      populateSettingsForm();
+      openModal('settings-modal');
+    });
+    $('sidebar-btn').addEventListener('click', () => {
+      $('sidebar-editor').value = state.sidebar || $('sidebar-editor').value;
+      openModal('sidebar-modal');
+    });
+    $('save-settings-btn').addEventListener('click', saveSettings);
+    $('save-sidebar-btn').addEventListener('click', saveSidebar);
+
+    document.querySelectorAll('[data-close]').forEach(btn => {
+      btn.addEventListener('click', () => closeModal(btn.getAttribute('data-close')));
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal(modal.id);
+      });
+    });
+
+    function wrapSelection(before, after = before) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const value = editor.value;
+      const selected = value.slice(start, end);
+      const next = value.slice(0, start) + before + selected + after + value.slice(end);
+      editor.value = next;
+      editor.focus();
+      editor.setSelectionRange(start + before.length, end + before.length);
+      setDirty(true);
+      debounceAutosave();
+    }
+
+    function insertAtCursor(text) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const value = editor.value;
+      editor.value = value.slice(0, start) + text + value.slice(end);
+      editor.focus();
+      editor.setSelectionRange(start + text.length, start + text.length);
+      setDirty(true);
+      debounceAutosave();
+    }
+
+    document.querySelectorAll('[data-md]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.getAttribute('data-md');
+        switch (type) {
+          case 'h2':
+            insertAtCursor('\n## Heading\n');
+            break;
+          case 'bold':
+            wrapSelection('**', '**');
+            break;
+          case 'italic':
+            wrapSelection('*', '*');
+            break;
+          case 'code':
+            wrapSelection('`', '`');
+            break;
+          case 'link':
+            insertAtCursor('[text](https://example.com)');
+            break;
+          case 'ul':
+            insertAtCursor('\n- item\n- item\n');
+            break;
+          case 'quote':
+            insertAtCursor('\n> quote\n');
+            break;
+        }
+      });
+    });
+
+    async function createNewPage() {
+      const name = window.prompt('New page filename (e.g. guide.md):', 'guide.md');
+      if (!name) return;
+      const trimmed = name.trim();
+      if (!trimmed.toLowerCase().endsWith('.md')) {
+        showToast('Filename must end with .md', 'err');
+        return;
+      }
+      if (state.pages.includes(trimmed)) {
+        showToast('That page already exists.', 'err');
+        return;
+      }
+      const template = `# ${trimmed.replace(/\\.md$/i, '')}\n\nStart writing…\n`;
+      try {
+        const res = await fetch('/api/page', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({path: trimmed, content: template}),
+        });
+        if (!res.ok) throw new Error('bad response');
+        state.pages.push(trimmed);
+        state.pages.sort((a, b) => a.localeCompare(b));
+        showToast('Created page.', 'ok');
+        setDirty(false);
+        await selectPage(trimmed);
+      } catch (error) {
+        showToast('Failed to create page.', 'err');
+      }
+    }
+
+    $('new-page-btn').addEventListener('click', createNewPage);
+
+    async function deleteSelectedPage() {
+      if (state.selectedPage === 'README.md') return;
+      const ok = window.confirm(`Delete ${state.selectedPage}? This cannot be undone.`);
+      if (!ok) return;
+      try {
+        const url = new URL('/api/page', window.location.origin);
+        url.searchParams.set('path', state.selectedPage);
+        const res = await fetch(url, {method: 'DELETE'});
+        if (!res.ok) throw new Error('bad response');
+        state.pages = state.pages.filter(p => p !== state.selectedPage);
+        showToast('Deleted page.', 'ok');
+        state.selectedPage = 'README.md';
+        setDirty(false);
+        renderPages();
+        await selectPage('README.md');
+      } catch (error) {
+        showToast('Failed to delete page.', 'err');
+      }
+    }
+
+    $('delete-page-btn').addEventListener('click', deleteSelectedPage);
+
+    async function uploadImage(file) {
+      const reader = new FileReader();
+      const promise = new Promise((resolve, reject) => {
+        reader.onerror = () => reject(new Error('read failed'));
+        reader.onload = () => resolve(reader.result);
+      });
+      reader.readAsDataURL(file);
+      const dataUrl = await promise;
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({filename: file.name, dataUrl}),
+      });
+      if (!res.ok) throw new Error('upload failed');
+      return res.json();
+    }
+
+    $('upload-btn').addEventListener('click', () => $('upload-input').click());
+    $('upload-input').addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (!file) return;
+      try {
+        showToast('Uploading image…', 'muted');
+        const data = await uploadImage(file);
+        insertAtCursor(`\n![](${data.path})\n`);
+        showToast('Uploaded and inserted image link.', 'ok');
+      } catch (error) {
+        showToast('Image upload failed.', 'err');
+      }
+    });
+
+    loadInitial();
+  </script>
+</body>
+</html>
